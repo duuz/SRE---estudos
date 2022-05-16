@@ -1,1 +1,4 @@
-# SRE---estudos
+# Ambiente para estudos
+
+>> - Prometheus + Grafana
+>> - Elastic + Kibana
