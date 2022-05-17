@@ -1,3 +1,7 @@
+networks:
+  xpto:
+    driver: bridge
+
 services:
   elasticsearch:
     image: elasticsearch:7.16.1
@@ -14,7 +18,7 @@ services:
       timeout: 10s
       retries: 3
     networks:
-      - elastic
+      - xpto
   kibana:
     image: kibana:7.16.1
     container_name: kib
@@ -23,7 +27,44 @@ services:
     depends_on:
       - elasticsearch
     networks:
-      - elastic
-networks:
-  elastic:
-    driver: bridge
+      - xpto
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+    - 9090:9090
+    command:
+    - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+    - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+    - cadvisor
+    networks:
+      - xpto
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+    - 8080:8080
+    volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+    depends_on:
+    - redis
+    networks:
+      - xpto
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+    - 6379:6379
+    networks:
+      - xpto
+  grafana:
+    image: grafana/grafana
+    ports:
+      - '3000:3000'
+    networks:
+      - xpto
