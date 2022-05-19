@@ -7,4 +7,4 @@
 >
 > ## Ambiente 2
 >
->> - Apache para exibir um pdf
+>> - Apache para exibir todos os pdf de uma pasta
